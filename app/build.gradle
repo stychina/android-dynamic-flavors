@@ -1,0 +1,76 @@
+import groovy.json.JsonSlurper
+
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 28
+
+    defaultConfig {
+        minSdkVersion 23
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+    flavorDimensions "site", "endpoint", "market"
+
+    signingConfigs {}
+
+    productFlavors {
+        pro {
+            dimension 'endpoint'
+        }
+
+        staging {
+            dimension 'endpoint'
+        }
+
+        google {
+            dimension 'market'
+        }
+
+        amazon {
+            dimension 'market'
+        }
+
+    }
+}
+
+def applicationDefinitions = [
+        ['name': 'application1', 'applicationId': 'com.damsols.application1'],
+        ['name': 'application2', 'applicationId': 'com.damsols.application2'],
+        ['name': 'application3', 'applicationId': 'com.damsols.application3']
+]
+
+def signKeysFile = file('signkeys/signkeys.json')
+def signKeys = new JsonSlurper().parseText(signKeysFile.text)
+def configs = signKeys.signingConfigs
+def signingConfigsMap = [:]
+configs.each { config ->
+    signingConfigsMap[config.configName] = config
+}
+
+applicationDefinitions.each { applicationDefinition ->
+    def signingConfig = signingConfigsMap[applicationDefinition['name']]
+    android.productFlavors.create(applicationDefinition['name'], { flavor ->
+        flavor.dimension = 'site'
+        flavor.applicationId = applicationDefinition['applicationId']
+        flavor.signingConfig = android.signingConfigs.create(applicationDefinition['name'])
+        flavor.signingConfig.storeFile = file(signingConfig.storeFile)
+        flavor.signingConfig.storePassword = signingConfig.storePassword
+        flavor.signingConfig.keyAlias = signingConfig.keyAlias
+        flavor.signingConfig.keyPassword = signingConfig.keyPassword
+    })
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+}

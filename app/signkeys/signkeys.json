@@ -1,0 +1,25 @@
+{
+  "signingConfigs":[
+    {
+      "configName":"application1",
+      "storeFile":"certs/application1.jks",
+      "storePassword":"password1",
+      "keyAlias":"application1",
+      "keyPassword":"password1"
+    },
+    {
+      "configName":"application2",
+      "storeFile":"certs/application2.jks",
+      "storePassword":"password2",
+      "keyAlias":"application2",
+      "keyPassword":"password2"
+    },
+    {
+      "configName":"application3",
+      "storeFile":"certs/application3.jks",
+      "storePassword":"password3",
+      "keyAlias":"application3",
+      "keyPassword":"password3"
+    }
+  ]
+}
